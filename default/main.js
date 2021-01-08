@@ -47,7 +47,7 @@ module.exports.loop = function () {
 
     for(let name in Game.creeps) {
         const creep = Game.creeps[name];
-        if (nearestRepairCreep && name === nearestRepairCreep.name) {
+        if (false && nearestRepairCreep && name === nearestRepairCreep.name) {
             roleRepair.run(creep, worstStructure)
         } else {
             creep.memory.repair = false
