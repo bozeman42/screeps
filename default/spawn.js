@@ -4,7 +4,7 @@ const creepComposition = {
 }
 
 const creepBody = [
-    WORK, CARRY, MOVE, WORK, CARRY, CARRY, CARRY, MOVE, MOVE
+    WORK, CARRY, MOVE, WORK, CARRY, WORK, WORK
 ]
 
 const getCost = () => creepBody.reduce((total, part) => total + BODYPART_COST[part], 0)

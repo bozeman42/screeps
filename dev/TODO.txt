@@ -1,0 +1,3 @@
+Make reusable resource gathering methods. Exclude empty sources
+
+Fix repair mode (using closest each tick switches between multiple creeps and nothing gets done)
