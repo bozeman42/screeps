@@ -1,11 +1,10 @@
 const creepComposition = {
     harvester: 8,
-    upgrader: 3,
-    builder: 2
+    upgrader: 4,
 }
 
 const creepBody = [
-    WORK, CARRY, MOVE, WORK, CARRY
+    WORK, CARRY, MOVE, WORK, CARRY, CARRY, CARRY, MOVE, MOVE
 ]
 
 const getCost = () => creepBody.reduce((total, part) => total + BODYPART_COST[part], 0)
