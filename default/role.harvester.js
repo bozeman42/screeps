@@ -33,10 +33,10 @@ var roleHarvester = {
             }
 	    }
 	    else {
-	        var sources = creep.pos.findClosestByPath(FIND_SOURCES);
-            if(creep.harvest(sources) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(sources, {visualizePathStyle: {stroke: '#ffaa00'}});
-            }
+        var sources = creep.pos.findClosestByPath(creep.room.find(FIND_SOURCES).filter(source => source.energy))
+        if(creep.harvest(sources) == ERR_NOT_IN_RANGE) {
+          creep.moveTo(sources, {visualizePathStyle: {stroke: '#ffaa00'}});
+        }
 	    }
 	}
 };
