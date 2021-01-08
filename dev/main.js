@@ -3,6 +3,8 @@ var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
 const spawn = require('spawn')
 
+
+
 module.exports.loop = function () {
     spawn()
     var tower = Game.getObjectById('f82ab24ffa380f71c61d0fcf');

@@ -1,4 +1,20 @@
 const roleUpgrader = require('role.upgrader')
+
+const selectBuildTarget = creep => {
+	const targets = creep.room.find(FIND_CONSTRUCTION_SITES)
+	if (!targets.length) return 
+	const nearFinished = targets.reduce((prevBest, target) => {
+		const prevBestRemaining = prevBest.progressTotal - prevBest.progress
+    const targetRemaining = target.progressTotal - target.progress
+    console.log('construction cost', Math.min(prevBestRemaining, targetRemaining))
+		return targetRemaining < prevBestRemaining
+		? target
+		: prevBest
+	}, targets[0])
+	// const closest = creep.pos.findClosestByPath(targets)
+	return nearFinished
+}
+
 var roleBuilder = {
     /** @param {Creep} creep **/
     run: function(creep) {
@@ -13,15 +29,14 @@ var roleBuilder = {
 	    }
 
 	    if(creep.memory.building) {
-        var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
-        if(targets.length) {
-          const target = creep.pos.findClosestByPath(targets)
-            if(creep.build(target) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
-            }
-        } else {
-          roleUpgrader.run(creep)
-        }
+					const target = selectBuildTarget(creep)
+            if(target) {
+                if(creep.build(target) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
+                }
+            } else {
+							roleUpgrader.run(creep)
+						}
 	    }
 	    else {
 	        var sources = creep.pos.findClosestByPath(FIND_SOURCES);
