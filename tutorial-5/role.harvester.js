@@ -1,3 +1,5 @@
+const roleBuilder = require("role.builder");
+
 var roleHarvester = {
 
     /** @param {Creep} creep **/
@@ -26,6 +28,8 @@ var roleHarvester = {
                 if(creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
                 }
+            } else {
+                roleBuilder.run(creep)
             }
 	    }
 	    else {
