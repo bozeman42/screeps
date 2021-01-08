@@ -6,7 +6,6 @@ const selectBuildTarget = creep => {
 	const nearFinished = targets.reduce((prevBest, target) => {
 		const prevBestRemaining = prevBest.progressTotal - prevBest.progress
     const targetRemaining = target.progressTotal - target.progress
-    console.log('construction cost', Math.min(prevBestRemaining, targetRemaining))
 		return targetRemaining < prevBestRemaining
 		? target
 		: prevBest

@@ -5,7 +5,7 @@ const selectBuildTarget = creep => {
 	if (!targets.length) return 
 	const nearFinished = targets.reduce((prevBest, target) => {
 		const prevBestRemaining = prevBest.progressTotal - prevBest.progress
-		const targetRemaining = target.progressTotal - target.progress
+    const targetRemaining = target.progressTotal - target.progress
 		return targetRemaining < prevBestRemaining
 		? target
 		: prevBest
