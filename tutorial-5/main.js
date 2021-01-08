@@ -1,8 +1,10 @@
 var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
+const spawn = require('spawn')
 
 module.exports.loop = function () {
+    spawn()
     var tower = Game.getObjectById('f82ab24ffa380f71c61d0fcf');
     if(tower) {
         var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
