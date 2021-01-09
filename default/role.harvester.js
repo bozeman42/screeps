@@ -1,4 +1,5 @@
 const roleBuilder = require("role.builder");
+const roleUpgrader = require('role.upgrader')
 
 var roleHarvester = {
 
@@ -46,7 +47,9 @@ var roleHarvester = {
                 creep.moveTo(source, { visualizePathStyle: { stroke: '#000000' }})
             } else if (source && creep.harvest(source) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}})
-            } else if (!source && creep.store.getUsedCapacity(RESOURCE_ENERGY) !== 0) creep.memory.delivering = true
+            } else if (!source && creep.store.getUsedCapacity(RESOURCE_ENERGY) !== 0) {
+                creep.memory.delivering = true
+            }
 	    }
 	}
 };

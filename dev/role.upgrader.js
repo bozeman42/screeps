@@ -5,7 +5,7 @@ var roleUpgrader = {
 
         if(creep.memory.upgrading && creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.upgrading = false;
-            creep.say('🔄 harvest');
+            creep.say('🔄 Withdrawing');
 	    }
 	    if(!creep.memory.upgrading && creep.store.getFreeCapacity() == 0) {
 	        creep.memory.upgrading = true;
@@ -13,15 +13,17 @@ var roleUpgrader = {
 	    }
 
 	    if(creep.memory.upgrading) {
-            if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+	        if (creep.room.controller.sign.username !== 'Bozeman' && creep.signController(creep.room.controller, 'Hello, everyone! I am new.') === ERR_NOT_IN_RANGE) {
+	            creep.moveTo(creep.room.controller)
+	        } else if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: '#ffffff'}});
             }
         }
         else {
-            var sources = creep.pos.findClosestByPath(FIND_SOURCES);
-            if(creep.harvest(sources) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(sources, {visualizePathStyle: {stroke: '#ffaa00'}});
-            }
+            var source = Game.getObjectById('5ff9d0880445754ac8aab259')
+            if(creep.withdraw(source, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
+            } else if (!source && creep.store.getUsedCapacity(RESOURCE_ENERGY)) creep.memory.upgrading = true
         }
 	}
 };
