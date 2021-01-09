@@ -4,7 +4,7 @@ const creepComposition = {
 }
 
 const creepBody = [
-    WORK, CARRY, MOVE, WORK, CARRY, CARRY, CARRY, MOVE, MOVE
+    WORK, CARRY, MOVE, WORK, CARRY, WORK, WORK, MOVE
 ]
 
 const getCost = () => creepBody.reduce((total, part) => total + BODYPART_COST[part], 0)
@@ -29,8 +29,8 @@ const spawnCreep = role => Game.spawns['Spawn1'].spawnCreep(creepBody, `${role} 
 const maintainSpawn = () => {
     cleanupCreeps()
     const availableEnergy = Game.spawns['Spawn1'].room.energyAvailable
-    console.log(getCost(), availableEnergy)
-    if (getCost() > availableEnergy) return
+    const cost = getCost()
+    if (cost > availableEnergy) return
 
     const allCreeps = Game.creeps
 
