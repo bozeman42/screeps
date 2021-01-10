@@ -30,18 +30,32 @@ var roleBuilder = {
 	    if (creep.memory.building) {
 					const target = selectBuildTarget(creep)
             if (target) {
+								console.log(creep.memory.role, 'building:', target)
                 if (creep.build(target) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
                 }
             } else {
+							Game.spawns['Spawn1'].memory.fallbacks++
 							roleUpgrader.run(creep)
 						}
 	    }
 	    else {
-            var source = creep.pos.findClosestByPath(creep.room.find(FIND_SOURCES).filter(source => source.energy))
-            if(source && creep.harvest(source) == ERR_NOT_IN_RANGE) {
-              creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
-            } else if (!source && creep.store.getUsedCapacity(RESOURCE_ENERGY)) creep.memory.building = true
+				const storage = Game.getObjectById('5ff9d0880445754ac8aab259')
+				let source = storage
+				const tombstones = creep.room.find(FIND_TOMBSTONES).filter(tombstone => tombstone.store.getUsedCapacity(RESOURCE_ENERGY))
+				if (tombstones.length) {
+						source = creep.pos.findClosestByPath(tombstones)
+				} else if (!storage.store.getUsedCapacity(RESOURCE_ENERGY)) {
+						const structures = creep.room.find(FIND_STRUCTURES)
+						const containers = structures.filter(structure => {
+										return structure.structureType === STRUCTURE_CONTAINER && structure.store.getUsedCapacity(RESOURCE_ENERGY)
+								})
+						source = creep.pos.findClosestByPath(containers, { ignoreCreeps: true })
+				}
+				console.log('builder source:', source)
+				if(creep.withdraw(source, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+						creep.moveTo(source, {visualizePathStyle: {stroke: '#0000ff'}});
+				} else if (!source && creep.store.getUsedCapacity(RESOURCE_ENERGY) !== 0) creep.memory.building = true
 	    }
 	}
 };

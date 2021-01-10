@@ -33,29 +33,29 @@ const spawnCreep = role => Game.spawns['Spawn1'].spawnCreep(creepBody, `${role} 
 
 const maintainSpawn = () => {
     cleanupCreeps()
-    Object.entries(Object.keys(Game.creeps).reduce((obj, name) => {
-        const role = Game.creeps[name].memory.formerRole
-        ? Game.creeps[name].memory.formerRole
-        : Game.creeps[name].memory.role
-        if (obj.hasOwnProperty(role)) {
-            obj[role]++
-        } else {
-            obj = {
-                ...obj,
-                [role]: 1
-            }
-        }
-        return obj
-    }, {})).forEach(([role, quantity]) => console.log(`${role}: ${quantity}`))
+    // Object.entries(Object.keys(Game.creeps).reduce((obj, name) => {
+    //     const role = Game.creeps[name].memory.formerRole
+    //     ? Game.creeps[name].memory.formerRole
+    //     : Game.creeps[name].memory.role
+    //     if (obj.hasOwnProperty(role)) {
+    //         obj[role]++
+    //     } else {
+    //         obj = {
+    //             ...obj,
+    //             [role]: 1
+    //         }
+    //     }
+    //     return obj
+    // }, {})).forEach(([role, quantity]) => console.log(`${role}: ${quantity}`))
     const availableEnergy = Game.spawns['Spawn1'].room.energyAvailable
-    console.log(getCost(), availableEnergy)
+    console.log(`New creep cost: ${getCost()}, Room energy available: ${availableEnergy}`)
     if (getCost() > availableEnergy) return
 
     const allCreeps = Game.creeps
 
     Object.entries(creepComposition).some(([role, quantity]) => {
         const creeps = getCreeps(role, allCreeps)
-        console.log(role, creeps.length)
+        // console.log(role, creeps.length)
         if (creeps.length < quantity) {
             console.log(`Spawning ${role}`)
             spawnCreep(role)

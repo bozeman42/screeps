@@ -8,7 +8,7 @@ const spawn = require('spawn')
 const REPAIRABLE_STRUCTURE_CONFIG = {
     [STRUCTURE_ROAD]: ROAD_HITS,
     [STRUCTURE_WALL]: 500000,
-    [STRUCTURE_RAMPART]: 150000,
+    [STRUCTURE_RAMPART]: 200000,
     [STRUCTURE_TOWER]: TOWER_HITS,
     [STRUCTURE_CONTAINER]: CONTAINER_HITS,
 }
@@ -16,7 +16,60 @@ const REPAIRABLE_STRUCTURE_CONFIG = {
 const MINIMUM_DAMAGE_THRESHOLD = 0
 
 module.exports.loop = function () {
+    console.log('\n\n\n\n\n********************************* NEW TICK **********************************')
+    initializeTick()
     spawn()
+    operateTower()
+
+    for(let name in Game.creeps) {
+        const creep = Game.creeps[name];
+        if (creep.memory.dying) {
+            creep.say('I am dying!')
+            if (creep.store.getUsedCapacity(RESOURCE_ENERGY) === 0) creep.suicide()
+            const storage = Game.getObjectById('5ff9d0880445754ac8aab259')
+            if (creep.transfer(storage, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) creep.moveTo(storage)
+        } else if (creep.memory.role === 'distributer') {
+            roleDistributer.run(creep)
+        } else if(creep.memory.role == 'harvester') {
+            roleHarvester.run(creep);
+        } else if(creep.memory.role == 'upgrader') {
+            roleUpgrader.run(creep);
+        } else if(creep.memory.role == 'builder') {
+            roleBuilder.run(creep);
+        }
+    }
+    announceRoles()
+    console.log('################################### END OF TICK ######################################')
+}
+
+function announceRoles() {
+    console.log('########################## END OF TICK ANNOUNCEMENTS ###########################################')
+    console.log(`Role fallbacks initiated: ${Game.spawns['Spawn1'].memory.fallbacks}`)
+    const { creeps } = Game
+    const roleInfo = Object.keys(creeps).reduce((arr, name) => {
+        return creeps[name].memory.formerRole
+        ? [
+            ...arr,
+            `${creeps[name].memory.formerRole} acting as ${creeps[name].memory.role}`
+        ] : arr
+    }, [])
+    if (roleInfo.length) console.log('Acting roles:')
+    roleInfo.forEach(announcement => console.log(announcement))
+    const nextToDie = Object.entries(Game.creeps).filter(([name, creep]) => creep.ticksToLive).reduce((doomedCreep, [name, creep]) => {
+        console.log('Creep:', creep.ticksToLive)
+        return doomedCreep.ticksToLive < creep.ticksToLive
+            ? doomedCreep
+            : creep
+    }, { ticksToLive: 1000000000 })
+    console.log(`The next creep to die is ${nextToDie.name} in ${nextToDie.ticksToLive}`)
+    if (nextToDie.ticksToLive < 20) nextToDie.memory.dying = true
+}
+
+function initializeTick() {
+    Game.spawns['Spawn1'].memory.fallbacks = 0
+}
+
+function operateTower() {
     const tower = Game.getObjectById('5ff88d6b4fe2904b1ea3def0');
     if(tower) {
         const closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
@@ -30,7 +83,9 @@ module.exports.loop = function () {
             tower.attack(closestHostile);
         }
     }
+}
 
+function repairsWIP() {
     const structures = Game.spawns['Spawn1'].room.find(FIND_STRUCTURES)
     const worstStructures = structures
         .filter(structure=> {
@@ -45,21 +100,4 @@ module.exports.loop = function () {
         })
 
     const nearestRepairCreep = worstStructure && worstStructure.pos.findClosestByPath(Object.keys(Game.creeps).map(x => Game.creeps[x]))
-
-    for(let name in Game.creeps) {
-        const creep = Game.creeps[name];
-        if (false && nearestRepairCreep && name === nearestRepairCreep.name) {
-            roleRepair.run(creep, worstStructure)
-        } else {
-            if (creep.memory.role === 'distributer') {
-                roleDistributer.run(creep)
-            } else if(creep.memory.role == 'harvester') {
-                roleHarvester.run(creep);
-            } else if(creep.memory.role == 'upgrader') {
-                roleUpgrader.run(creep);
-            } else if(creep.memory.role == 'builder') {
-                roleBuilder.run(creep);
-            }
-        }
-    }
 }
