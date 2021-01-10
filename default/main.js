@@ -13,7 +13,7 @@ const REPAIRABLE_STRUCTURE_CONFIG = {
     [STRUCTURE_CONTAINER]: CONTAINER_HITS,
 }
 
-const MINIMUM_DAMAGE_THRESHOLD = 0
+const MINIMUM_DAMAGE_THRESHOLD = 200
 
 module.exports.loop = function () {
     console.log('\n\n\n\n\n********************************* NEW TICK **********************************')
@@ -73,7 +73,7 @@ function operateTower() {
     const tower = Game.getObjectById('5ff88d6b4fe2904b1ea3def0');
     if(tower) {
         const closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-            filter: (structure) => structure.hits < (REPAIRABLE_STRUCTURE_CONFIG.hasOwnProperty(structure.structureType) ? REPAIRABLE_STRUCTURE_CONFIG[structure.structureType] : structure.hitsMax) - 200
+            filter: (structure) => structure.hits < (REPAIRABLE_STRUCTURE_CONFIG.hasOwnProperty(structure.structureType) ? REPAIRABLE_STRUCTURE_CONFIG[structure.structureType] : structure.hitsMax) - MINIMUM_DAMAGE_THRESHOLD
         });
         if(closestDamagedStructure) {
             tower.repair(closestDamagedStructure);
