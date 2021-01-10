@@ -17,7 +17,7 @@ var roleHarvester = {
 
 	    if (creep.memory.delivering) {
             const structures = creep.room.find(FIND_MY_STRUCTURES);
-	        var targets = structures.filter(structure => {
+	        const targets = structures.filter(structure => {
                 return (structure.structureType === STRUCTURE_EXTENSION
                     || structure.structureType === STRUCTURE_STORAGE
                     || structure.structureType === STRUCTURE_CONTAINER
@@ -25,6 +25,7 @@ var roleHarvester = {
                     || (structure.structureType === STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) >= 200)
                     ) && structure.store.getFreeCapacity(RESOURCE_ENERGY) !== 0
             })
+            if (targets.some(target => target.structureType === STRUCTURE_EXTENSION || target.structureType === STRUCTURE_SPAWN)) targets.filter(target => target.structureType !== STRUCTURE_STORAGE)
             if (targets.length) {
                 const target = creep.pos.findClosestByPath(targets)
                 if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
@@ -49,6 +50,9 @@ var roleHarvester = {
                 creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}})
             } else if (!source && creep.store.getUsedCapacity(RESOURCE_ENERGY) !== 0) {
                 creep.memory.delivering = true
+            } else if (!source && creep.store.getUsedCapacity(RESOURCE_ENERGY) === 0) {
+                creep.memory.formerRole = creep.memory.role
+                creep.memory.role = 'upgrader'
             }
 	    }
 	}

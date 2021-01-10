@@ -17,7 +17,7 @@ var roleHarvester = {
 
 	    if (creep.memory.delivering) {
             const structures = creep.room.find(FIND_MY_STRUCTURES);
-	        var targets = structures.filter(structure => {
+	        const allTargets = structures.filter(structure => {
                 return (structure.structureType === STRUCTURE_EXTENSION
                     || structure.structureType === STRUCTURE_STORAGE
                     || structure.structureType === STRUCTURE_CONTAINER
@@ -25,8 +25,12 @@ var roleHarvester = {
                     || (structure.structureType === STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) >= 200)
                     ) && structure.store.getFreeCapacity(RESOURCE_ENERGY) !== 0
             })
+            const targets = allTargets.some(target => target.structureType === STRUCTURE_EXTENSION || target.structureType === STRUCTURE_SPAWN)
+                ? allTargets.filter(target => target.structureType !== STRUCTURE_STORAGE && target.structureType !== STRUCTURE_TOWER)
+                : allTargets
             if (targets.length) {
                 const target = creep.pos.findClosestByPath(targets)
+                console.log(creep.name, 'stocking:', target)
                 if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
                 }
@@ -44,11 +48,14 @@ var roleHarvester = {
                     // ...creep.room.find(FIND_STRUCTURES).filter(structure => structure.structureType === STRUCTURE_CONTAINER && structue.store.getUsedCapacity(RESOURCE_ENERGY))
                 ])
             if (droppedSources.length && creep.pickup(source) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(source, { visualizePathStyle: { stroke: '#000000' }})
+                creep.moveTo(source, { visualizePathStyle: { stroke: '#00ff00' }})
             } else if (source && creep.harvest(source) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}})
             } else if (!source && creep.store.getUsedCapacity(RESOURCE_ENERGY) !== 0) {
                 creep.memory.delivering = true
+            } else if (!source && creep.store.getUsedCapacity(RESOURCE_ENERGY) === 0) {
+                creep.memory.formerRole = creep.memory.role
+                creep.memory.role = 'upgrader'
             }
 	    }
 	}
