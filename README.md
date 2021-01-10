@@ -1,3 +1,5 @@
+# Screeps
+I made this repo because it seems that the game just wiped all of my code at one point. To get back to a decent starting point I used the tutorial code to get basic functionality back, and have been modifying it since.
 # To do
 * Make reusable resource gathering methods
 * Fix repair mode (using closest each tick switches between multiple creeps and nothing gets done)
