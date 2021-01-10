@@ -17,7 +17,8 @@ const selectBuildTarget = creep => {
 var roleBuilder = {
     /** @param {Creep} creep **/
     run: function(creep) {
-
+        // For lost creeps that accidenally leave the room. Will have to change when expanding
+        if (creep.room.controller.id !== '59f1a32d82100e1594f3b13a') return creep.moveTo(Game.getObjectById('59f1a32d82100e1594f3b13a'))
 	    if (creep.memory.building && creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.building = false;
             creep.say('🔄 harvest');

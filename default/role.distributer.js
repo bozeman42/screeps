@@ -4,7 +4,7 @@ var roleDistributer = {
 
     /** @param {Creep} creep **/
     run: function(creep) {
-
+        if (creep.room.controller.id !== '59f1a32d82100e1594f3b13a') return creep.moveTo(Game.getObjectById('59f1a32d82100e1594f3b13a'))
 	    if (creep.memory.distributing && creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.distributing = false;
             creep.say('🔄 withdraw');
