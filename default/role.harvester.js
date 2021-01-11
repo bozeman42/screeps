@@ -65,9 +65,9 @@ var roleHarvester = {
             } else if (!source && creep.store.getUsedCapacity(RESOURCE_ENERGY) !== 0) {
                 creep.memory.delivering = true
             } else if (!source && creep.store.getUsedCapacity(RESOURCE_ENERGY) === 0) {
-                Game.spawns['Spawn1'].memory.fallbacks++
-                creep.memory.formerRole = creep.memory.role
-                creep.memory.role = 'upgrader'
+                // Game.spawns['Spawn1'].memory.fallbacks++
+                // creep.memory.formerRole = creep.memory.role
+                // creep.memory.role = 'upgrader'
             }
 	    }
 	}
