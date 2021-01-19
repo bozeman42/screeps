@@ -16,7 +16,7 @@ var roleUpgrader = {
 	        creep.memory.upgrading = true;
 	        creep.say('⚡ upgrade');
 	    }
-
+        if (creep.room.controller.id !== '59f1a32d82100e1594f3b13a') return creep.moveTo(Game.getObjectById('59f1a32d82100e1594f3b13a'))
 	    if(creep.memory.upgrading) {
             console.log(`${creep.name} upgrading`)
 	        if (creep.room.controller.sign.username !== 'Bozeman' && creep.signController(creep.room.controller, 'Hello, everyone! I am new.') === ERR_NOT_IN_RANGE) {
