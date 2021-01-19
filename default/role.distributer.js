@@ -35,14 +35,14 @@ var roleDistributer = {
             }
 	    }
 	    else {
-            let source = storage
+            let source
             const tombstones = creep.room.find(FIND_TOMBSTONES).filter(tombstone => tombstone.store.getUsedCapacity(RESOURCE_ENERGY))
-            if (tombstones.length) {
+            if (tombstones.length && creep.pos.findClosestByPath(tombstones) && creep.pos.findClosestByPath(tombstones).store.getUsedCapacity(RESOURCE_ENERGY)) {
                 source = creep.pos.findClosestByPath(tombstones)
-            } else if (!storage.store.getUsedCapacity(RESOURCE_ENERGY)) {
+            } else {
                 const structures = creep.room.find(FIND_STRUCTURES)
                 const containers = structures.filter(structure => {
-                        return structure.structureType === STRUCTURE_CONTAINER && structure.store.getUsedCapacity(RESOURCE_ENERGY)
+                        return (structure.structureType === STRUCTURE_CONTAINER || structure.structureType === STRUCTURE_STORAGE) && structure.store.getUsedCapacity(RESOURCE_ENERGY)
                     })
                 source = creep.pos.findClosestByPath(containers, { ignoreCreeps: true })
             }

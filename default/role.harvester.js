@@ -14,13 +14,15 @@ var roleHarvester = {
 	        creep.memory.delivering = true;
 	        creep.say('🚚 deliver');
 	    }
-        const energySources = creep.room.find(FIND_SOURCES).filter(source => source.energy && creep.pos.findPathTo(source))
+        if (creep.room.controller.id !== '59f1a32d82100e1594f3b13a') return creep.moveTo(Game.getObjectById('59f1a32d82100e1594f3b13a'))
+        const energySources = creep.pos.findClosestByPath(creep.room.find(FIND_SOURCES).filter(source => source.energy))
+
 	    if (creep.memory.delivering) {
             const structures = creep.room.find(FIND_STRUCTURES);
 	        const allTargets = structures.filter(structure => {
                 return (structure.structureType === STRUCTURE_EXTENSION
                     || structure.structureType === STRUCTURE_STORAGE
-                    || (structure.structureType === STRUCTURE_CONTAINER && creep.pos.findClosestByPath(energySources))
+                    || (structure.structureType === STRUCTURE_CONTAINER && energySources)
                     || structure.structureType === STRUCTURE_SPAWN
                     || (structure.structureType === STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) >= 200)
                     ) && structure.store.getFreeCapacity(RESOURCE_ENERGY) !== 0
@@ -44,26 +46,26 @@ var roleHarvester = {
             }
 	    } else {
             const droppedSources = creep.room.find(FIND_DROPPED_RESOURCES)
-            const containers = energySources.length
-                ? []
-                : creep.room.find(FIND_STRUCTURES).filter(structure => structure.structureType === STRUCTURE_CONTAINER && structure.store.getUsedCapacity(RESOURCE_ENERGY))
+            const containers = creep.room.find(FIND_STRUCTURES).filter(structure => structure.structureType === STRUCTURE_CONTAINER && structure.store.getUsedCapacity(RESOURCE_ENERGY))
+            
             var source = creep.pos.findClosestByPath(droppedSources.length
-                ? droppedSources
-                : [
-                    ...energySources,
-                    ...containers
-                ])
+                    ? droppedSources
+                    : energySources
+                        ? [ energySources ]
+                        : containers
+                )
+    
             if (droppedSources.length && creep.pickup(source) == ERR_NOT_IN_RANGE) {
                 console.log('Harvester source:', source)
                 creep.moveTo(source, { visualizePathStyle: { stroke: '#00ff00' }})
-            } else if (source && energySources.length && creep.harvest(source) == ERR_NOT_IN_RANGE) {
+            } else if (source && energySources && creep.harvest(source) == ERR_NOT_IN_RANGE) {
                 console.log('Harvester source:', source)
                 creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}})
-            } else if (source && !energySources.length && creep.withdraw(source, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+            } else if (source && !energySources && creep.withdraw(source, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
                 console.log('Harvester source:', source)
                 creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}})
             } else if (!source && creep.store.getUsedCapacity(RESOURCE_ENERGY) !== 0) {
-                creep.memory.delivering = true
+                roleBuilder.run(creep)
             } else if (!source && creep.store.getUsedCapacity(RESOURCE_ENERGY) === 0) {
                 // Game.spawns['Spawn1'].memory.fallbacks++
                 // creep.memory.formerRole = creep.memory.role
