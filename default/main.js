@@ -8,7 +8,7 @@ const spawn = require('spawn')
 const REPAIRABLE_STRUCTURE_CONFIG = {
     [STRUCTURE_ROAD]: ROAD_HITS,
     [STRUCTURE_WALL]: 1000000,
-    [STRUCTURE_RAMPART]: 500000,
+    [STRUCTURE_RAMPART]: 550000,
     [STRUCTURE_TOWER]: TOWER_HITS,
     [STRUCTURE_CONTAINER]: CONTAINER_HITS,
 }
@@ -19,7 +19,8 @@ module.exports.loop = function () {
     console.log('\n\n\n\n\n********************************* NEW TICK **********************************')
     initializeTick()
     spawn()
-    operateTower()
+    const towers = [Game.getObjectById('5ff88d6b4fe2904b1ea3def0'), Game.getObjectById('5ffd77af33c9344559a20684')]
+    towers.forEach(operateTower)
 
     for(let name in Game.creeps) {
         const creep = Game.creeps[name];
@@ -69,29 +70,34 @@ function initializeTick() {
     Game.spawns['Spawn1'].memory.fallbacks = 0
 }
 
-function operateTower() {
-    const tower = Game.getObjectById('5ff88d6b4fe2904b1ea3def0');
-    if(tower) {
+function operateTower(tower) {
+    if(tower && tower.store.getUsedCapacity(RESOURCE_ENERGY) > 10) {
+        const closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+        console.log('Hostile creep:', closestHostile)
+        if(closestHostile) {
+            tower.attack(closestHostile)
+        }
         const structures = tower.room.find(FIND_STRUCTURES)
             .filter(structure => {
                 return structure.hits < (REPAIRABLE_STRUCTURE_CONFIG.hasOwnProperty(structure.structureType) ? REPAIRABLE_STRUCTURE_CONFIG[structure.structureType] : structure.hitsMax) - MINIMUM_DAMAGE_THRESHOLD
             })
-        const mostDamagedStructure = structures.reduce((prevWorst, structure) => {
+        const fewestHitpoints = structures.reduce((lowest, structure) => {
+            return lowest.hits < structure.hits ? lowest : structure
+        }, structures[0])
+        const mostDamagedStructure = structures && structures.reduce((prevWorst, structure) => {
                 const prevWorstDamage = REPAIRABLE_STRUCTURE_CONFIG.hasOwnProperty(prevWorst.structureType)
                     ? REPAIRABLE_STRUCTURE_CONFIG[prevWorst.structureType] - prevWorst.hits
                     : prevWorst.hitsMax - prevWorst.hits
                 const damage = REPAIRABLE_STRUCTURE_CONFIG.hasOwnProperty(structure.structureType)
                     ? REPAIRABLE_STRUCTURE_CONFIG[structure.structureType] - structure.hits
                     : structure.hitsMax - structure.hits
-                console.log(damage, prevWorstDamage)
                 return damage > prevWorstDamage ? structure : prevWorst
             }, structures[0])
-        if(mostDamagedStructure) {
-            tower.repair(mostDamagedStructure);
-        }
-        const closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-        if(closestHostile) {
-            tower.attack(closestHostile);
+        const damage = mostDamagedStructure && (REPAIRABLE_STRUCTURE_CONFIG.hasOwnProperty(mostDamagedStructure.structureType)
+            ? REPAIRABLE_STRUCTURE_CONFIG[mostDamagedStructure.structureType] - mostDamagedStructure.hits
+            : mostDamagedStructure.hitsMax - mostDamagedStructure.hits)
+        if(fewestHitpoints && !closestHostile) {
+            tower.repair(fewestHitpoints);
         }
     }
 }
