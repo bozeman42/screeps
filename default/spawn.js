@@ -1,6 +1,6 @@
 const creepComposition = {
-    harvester: 6,
-    distributer: 2,
+    harvester: 7,
+    distributer: 3,
     upgrader: 1,
     builder: 1
 }
